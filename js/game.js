@@ -6,6 +6,8 @@ pong.ctx = pong.canvas.getContext("2d");
 pong.constants = {};
 pong.constants.drawInterval = 7;
 pong.constants.ballRadius = 14;
+pong.constants.initDx = 2;
+pong.constants.initDy = -2;
 pong.constants.color = "#FFFFFF";
 pong.constants.paddleHeight = 15;
 pong.constants.paddleWidth = 75;
@@ -22,8 +24,8 @@ pong.state = {};
 pong.state.ball = {};
 pong.state.ball.x = pong.canvas.width / 2;
 pong.state.ball.y = pong.canvas.height - 70;
-pong.state.ball.dx = 2;
-pong.state.ball.dy = -2;
+pong.state.ball.dx = pong.constants.initDx;
+pong.state.ball.dy = pong.constants.initDy;
 pong.state.ball.radius = pong.constants.ballRadius;
 
 pong.state.paddle1 = {};
@@ -53,8 +55,8 @@ function resetState() {
     pong.state.ball = {};
     pong.state.ball.x = pong.canvas.width / 2;
     pong.state.ball.y = pong.canvas.height - 70;
-    pong.state.ball.dx = 2;
-    pong.state.ball.dy = -2;
+    pong.state.ball.dx = pong.constants.initDx;
+    pong.state.ball.dy = pong.constants.initDy;
     pong.state.ball.radius = pong.constants.ballRadius;
 
     pong.state.paddle1 = {};
