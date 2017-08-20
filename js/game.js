@@ -9,7 +9,7 @@ pong.state.lastWinner = "1";
 pong.constants = {};
 pong.constants.drawInterval = 7;
 pong.constants.ballRadius = 14;
-pong.constants.initTotalSpeed = 3;
+pong.constants.initTotalSpeed = 2.7;
 pong.constants.initDx = 2;
 pong.constants.initDy = -2;
 pong.constants.color = "#FFFFFF";
@@ -55,6 +55,7 @@ function flipCoin() {
 
 function getInitialSpeed() {
     var initDx = getRandom(1.5, pong.constants.initTotalSpeed - 1);
+    // var initDx = 0.1;
     if (flipCoin()) {
         initDx = -initDx;
     }
@@ -135,8 +136,10 @@ function checkPaddleCollision(ball, paddle) {
         if (ball.x <= paddle.x + paddle.width &&
             ball.x + ball.radius >= paddle.x &&
             ball.y + ball.radius >= paddle.y) {
+                // alert('hit paddle 1. old dx: ' + ball.dx + ', old dy: ' + ball.dy);
                 ball.y = paddle.y - ball.radius;
-                // ball.dx = getNewDx(ball, paddle);
+                // var angleChange = getNewDxAngleCoeff(ball, paddle);
+                // ball.dx = getNewDxAngleCoeff(ball, paddle) * ball.dx;
                 // ball.dy = getOtherSpeed(ball.dx, pong.constants.initTotalSpeed);
                 ball.dy = -ball.dy;
                 // alert('hit paddle 1. new dx: ' + ball.dx + ', new dy: ' + ball.dy);
@@ -145,23 +148,36 @@ function checkPaddleCollision(ball, paddle) {
         if (ball.x <= paddle.x + paddle.width &&
             ball.x + ball.radius >= paddle.x &&
             ball.y <= paddle.y + paddle.height) {
+                // alert('hit paddle 2. old dx: ' + ball.dx + ', old dy: ' + ball.dy);
                 ball.y = paddle.y + paddle.height;
                 ball.dy = -ball.dy;
-                // ball.dx = getNewDx(ball, paddle);
+                // var angleChange = getNewDxAngleCoeff(ball, paddle);
+                // ball.dx = getNewDx(ball, paddle) * ball.dx;
                 // ball.dy = getOtherSpeed(ball.dx, pong.constants.initTotalSpeed);
                 // alert('hit paddle 2. new dx: ' + ball.dx + ', new dy: ' + ball.dy);
         }
     }
 }
 
-function getNewDx(ball, paddle) {
+function getNewDxAngleCoeff(ball, paddle) {
     var ballMidPoint = ball.x + ball.radius / 2;
-    if (ballMidPoint < paddle.x + paddle.width / 2) {
-        var start = paddle.x;
-        var end = ballMidPoint;
+    var paddleMidPoint = paddle.x + paddle.width / 2;
+    if (ballMidPoint < paddleMidPoint) {
+        if (ball.dx > 0) {
+            var start = paddle.x;
+            var end = paddleMidPoint;
+        } else {
+            var start = paddleMidPoint;
+            var end = paddle.x;
+        }
     } else {
-        var start = ballMidPoint;
-        var end = paddle.x + paddle.width;
+        if (ball.dx > 0) {
+            var start = paddleMidPoint;
+            var end = paddle.x + paddle.width;
+        } else {
+            var start = paddle.x + paddle.width;
+            var end = paddleMidPoint;
+        }
     }
 
     var slope = getSlope(start, end);
