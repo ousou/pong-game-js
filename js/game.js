@@ -15,7 +15,11 @@ pong.state.color = "#FFFFFF";
 pong.state.paddleHeight = 15;
 pong.state.paddleWidth = 75;
 pong.state.paddlePadding = 10;
-pong.state.paddleX = (pong.canvas.width - pong.state.paddleWidth) / 2;
+pong.state.paddle1 = {};
+pong.state.paddle2 = {};
+pong.state.paddle1.x = (pong.canvas.width - pong.state.paddleWidth) / 2;
+pong.state.paddle2.x = (pong.canvas.width - pong.state.paddleWidth) / 2;
+
 pong.state.rightPressed = false;
 pong.state.leftPressed = false;
 
@@ -40,19 +44,23 @@ function checkCollisions() {
         pong.state.dx = -pong.state.dx;
     }
     if (pong.state.y + pong.state.dy < pong.state.ballRadius) {
-        pong.state.dy = -pong.state.dy;
-    } else if (pong.state.y + pong.state.dy > pong.canvas.height - pong.state.ballRadius) {
-        if (pong.state.x > pong.state.paddleX && pong.state.x < pong.state.paddleX + pong.state.paddleWidth) {
+        if (pong.state.x > pong.state.paddle2.x && pong.state.x < pong.state.paddle2.x + pong.state.paddleWidth) {
             pong.state.dy = -pong.state.dy;
         } else {
-            handleGameOver();
+            handleGameOver("Player 1 wins");
+        }
+    } else if (pong.state.y + pong.state.dy > pong.canvas.height - pong.state.ballRadius) {
+        if (pong.state.x > pong.state.paddle1.x && pong.state.x < pong.state.paddle1.x + pong.state.paddleWidth) {
+            pong.state.dy = -pong.state.dy;
+        } else {
+            handleGameOver("Player 2 wins");
         }
     }
 }
 
-function handleGameOver() {
-    alert("GAME OVER");
-    document.location.reload();    
+function handleGameOver(message) {
+    alert(message);
+    document.location.reload();
 }
 
 function updateBallLocation() {
@@ -61,17 +69,18 @@ function updateBallLocation() {
 }
 
 function updatePaddleLocation() {
-    if (pong.state.rightPressed && pong.state.paddleX < pong.canvas.width - pong.state.paddleWidth) {
-        pong.state.paddleX += 4;
-    } else if (pong.state.leftPressed && pong.state.paddleX > 0) {
-        pong.state.paddleX -= 4;
+    if (pong.state.rightPressed && pong.state.paddle1.x < pong.canvas.width - pong.state.paddleWidth) {
+        pong.state.paddle1.x += 4;
+    } else if (pong.state.leftPressed && pong.state.paddle1.x > 0) {
+        pong.state.paddle1.x -= 4;
     }
 }
 
 function draw() {
     pong.ctx.clearRect(0, 0, pong.canvas.width, pong.canvas.height);
     drawBall(pong.ctx, pong.state.x, pong.state.y, pong.state.ballRadius, pong.state.color);
-    drawPaddle(pong.ctx, pong.state.paddleX, pong.canvas.height - pong.state.paddleHeight - pong.state.paddlePadding, pong.state.paddleHeight, pong.state.paddleWidth, pong.state.color);
+    drawPaddle(pong.ctx, pong.state.paddle1.x, pong.canvas.height - pong.state.paddleHeight - pong.state.paddlePadding, pong.state.paddleHeight, pong.state.paddleWidth, pong.state.color);
+    drawPaddle(pong.ctx, pong.state.paddle2.x, pong.state.paddlePadding, pong.state.paddleHeight, pong.state.paddleWidth, pong.state.color);
     checkCollisions();
     updateBallLocation();
     updatePaddleLocation();
