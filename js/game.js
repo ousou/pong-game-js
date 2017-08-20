@@ -34,6 +34,7 @@ function startGame() {
     var speed = getInitialSpeed();
     resetState(coords, speed);
     document.getElementById("start").disabled = true;
+    document.getElementById('pongCanvas').focus();
     pong.state.intervalId = setInterval(draw, pong.constants.drawInterval);
 }
 
@@ -133,6 +134,9 @@ function checkPaddleCollision(ball, paddle) {
                 ball.dy = -ball.dy;
         }
     }
+}
+
+function getNewDx(ball, paddle) {
 
 }
 
