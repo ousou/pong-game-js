@@ -2,6 +2,7 @@ var pong = {};
 
 pong.canvas = document.getElementById("pongCanvas");
 pong.ctx = pong.canvas.getContext("2d");
+pong.drawInterval = 7;
 
 pong.state = {};
 
@@ -11,8 +12,9 @@ pong.state.dx = 2;
 pong.state.dy = -2;
 pong.state.ballRadius = 10;
 pong.state.color = "#FFFFFF";
-pong.state.paddleHeight = 10;
+pong.state.paddleHeight = 15;
 pong.state.paddleWidth = 75;
+pong.state.paddlePadding = 10;
 pong.state.paddleX = (pong.canvas.width - pong.state.paddleWidth) / 2;
 pong.state.rightPressed = false;
 pong.state.leftPressed = false;
@@ -25,9 +27,9 @@ function drawBall(ctx, xCoord, yCoord, radius, color) {
     ctx.closePath();
 }
 
-function drawPaddle(ctx, xCoord, height, width, color) {
+function drawPaddle(ctx, xCoord, yCoord, height, width, color) {
     ctx.beginPath();
-    ctx.rect(xCoord, pong.canvas.height - height, width, height);
+    ctx.rect(xCoord, yCoord, width, height);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
@@ -43,10 +45,14 @@ function checkCollisions() {
         if (pong.state.x > pong.state.paddleX && pong.state.x < pong.state.paddleX + pong.state.paddleWidth) {
             pong.state.dy = -pong.state.dy;
         } else {
-            alert("GAME OVER");
-            document.location.reload();
+            handleGameOver();
         }
     }
+}
+
+function handleGameOver() {
+    alert("GAME OVER");
+    document.location.reload();    
 }
 
 function updateBallLocation() {
@@ -65,7 +71,7 @@ function updatePaddleLocation() {
 function draw() {
     pong.ctx.clearRect(0, 0, pong.canvas.width, pong.canvas.height);
     drawBall(pong.ctx, pong.state.x, pong.state.y, pong.state.ballRadius, pong.state.color);
-    drawPaddle(pong.ctx, pong.state.paddleX, pong.state.paddleHeight, pong.state.paddleWidth, pong.state.color);
+    drawPaddle(pong.ctx, pong.state.paddleX, pong.canvas.height - pong.state.paddleHeight - pong.state.paddlePadding, pong.state.paddleHeight, pong.state.paddleWidth, pong.state.color);
     checkCollisions();
     updateBallLocation();
     updatePaddleLocation();
@@ -92,4 +98,4 @@ function keyUpHandler(e) {
     }
 }
 
-setInterval(draw, 7);
+setInterval(draw, pong.drawInterval);
