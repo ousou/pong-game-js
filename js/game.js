@@ -5,7 +5,7 @@ pong.ctx = pong.canvas.getContext("2d");
 
 pong.constants = {};
 pong.constants.drawInterval = 7;
-pong.constants.ballRadius = 10;
+pong.constants.ballRadius = 14;
 pong.constants.color = "#FFFFFF";
 pong.constants.paddleHeight = 15;
 pong.constants.paddleWidth = 75;
@@ -21,21 +21,28 @@ pong.constants.paddle2.rightKey = 88;
 pong.state = {};
 pong.state.ball = {};
 pong.state.ball.x = pong.canvas.width / 2;
-pong.state.ball.y = pong.canvas.height - 30;
+pong.state.ball.y = pong.canvas.height - 70;
 pong.state.ball.dx = 2;
 pong.state.ball.dy = -2;
+pong.state.ball.radius = pong.constants.ballRadius;
 
 pong.state.paddle1 = {};
+pong.state.paddle1.number = 1;
 pong.state.paddle1.right = false;
 pong.state.paddle1.left = false;
 pong.state.paddle1.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
 pong.state.paddle1.y = pong.canvas.height - pong.constants.paddleHeight - pong.constants.paddlePadding;
+pong.state.paddle1.height = pong.constants.paddleHeight;
+pong.state.paddle1.width = pong.constants.paddleWidth;
 
 pong.state.paddle2 = {};
+pong.state.paddle2.number = 2;
 pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
 pong.state.paddle2.y = pong.constants.paddlePadding;
 pong.state.paddle2.right = false;
 pong.state.paddle2.left = false;
+pong.state.paddle2.height = pong.constants.paddleHeight;
+pong.state.paddle2.width = pong.constants.paddleWidth;
 
 pong.score = {
     1: 0,
@@ -45,26 +52,33 @@ pong.score = {
 function resetState() {
     pong.state.ball = {};
     pong.state.ball.x = pong.canvas.width / 2;
-    pong.state.ball.y = pong.canvas.height - 30;
+    pong.state.ball.y = pong.canvas.height - 70;
     pong.state.ball.dx = 2;
     pong.state.ball.dy = -2;
+    pong.state.ball.radius = pong.constants.ballRadius;
 
     pong.state.paddle1 = {};
+    pong.state.paddle1.number = 1;
     pong.state.paddle1.right = false;
     pong.state.paddle1.left = false;
     pong.state.paddle1.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
     pong.state.paddle1.y = pong.canvas.height - pong.constants.paddleHeight - pong.constants.paddlePadding;
+    pong.state.paddle1.height = pong.constants.paddleHeight;
+    pong.state.paddle1.width = pong.constants.paddleWidth;
 
     pong.state.paddle2 = {};
+    pong.state.paddle2.number = 2;
     pong.state.paddle2.right = false;
     pong.state.paddle2.left = false;
     pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
     pong.state.paddle2.y = pong.constants.paddlePadding;
+    pong.state.paddle2.height = pong.constants.paddleHeight;
+    pong.state.paddle2.width = pong.constants.paddleWidth;
 }
 
 function drawBall(ctx, xCoord, yCoord, radius, color) {
     ctx.beginPath();
-    ctx.arc(xCoord, yCoord, radius, 0, Math.PI*2);
+    ctx.rect(xCoord, yCoord, radius, radius);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
@@ -79,29 +93,46 @@ function drawPaddle(ctx, xCoord, yCoord, height, width, color) {
 }
 
 function checkSideWallCollisions() {
-    if (pong.state.ball.x + pong.state.ball.dx > pong.canvas.width - pong.constants.ballRadius || pong.state.ball.x + pong.state.ball.dx < pong.constants.ballRadius) {
+    if (pong.state.ball.x + pong.state.ball.dx > pong.canvas.width - pong.state.ball.radius || pong.state.ball.x + pong.state.ball.dx < 0) {
         pong.state.ball.dx = -pong.state.ball.dx;
     }
 }
 
 function checkEndWallCollisions() {
-    if (pong.state.ball.y + pong.state.ball.dy < pong.constants.ballRadius) {
+    if (pong.state.ball.y + pong.state.ball.dy < 0) {
         handleGameOver("1");
-    } else if (pong.state.ball.y + pong.state.ball.dy > pong.canvas.height - pong.constants.ballRadius) {
+    } else if (pong.state.ball.y + pong.state.ball.dy > pong.canvas.height - pong.state.ball.radius) {
         handleGameOver("2");
     }
 }
 
 function checkPaddleCollision(ball, paddle) {
-    if (ball.x > paddle.x && ball.x < paddle.x + pong.constants.paddleWidth && ball.y > paddle.y && ball.y < paddle.y + pong.constants.paddleHeight) {
-        ball.dy = -ball.dy;
+    if (paddle.number === 1) {
+        if (ball.x <= paddle.x + paddle.width &&
+            ball.x + ball.radius >= paddle.x &&
+            ball.y + ball.radius >= paddle.y) {
+                ball.y = paddle.y - ball.radius;
+                ball.dy = -ball.dy;
+        }
+    } else if (paddle.number === 2) {
+        if (ball.x <= paddle.x + paddle.width &&
+            ball.x + ball.radius >= paddle.x &&
+            ball.y <= paddle.y + paddle.height) {
+                ball.y = paddle.y + paddle.height;
+                ball.dy = -ball.dy;
+        }
     }
+
+}
+
+function distance(x1, y1, x2, y2) {
+    return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 }
 
 function checkCollisions() {
     checkSideWallCollisions();
-    checkPaddleCollision(pong.state.ball, pong.state.paddle1);
-    checkPaddleCollision(pong.state.ball, pong.state.paddle2);
+    checkPaddleCollision(pong.state.ball, pong.state.paddle1, 1);
+    checkPaddleCollision(pong.state.ball, pong.state.paddle2, 2);
     checkEndWallCollisions();
 }
 
@@ -117,9 +148,9 @@ function updateBallLocation() {
 }
 
 function updatePaddleLocation(paddle) {
-    if (paddle.right && paddle.x < pong.canvas.width - pong.constants.paddleWidth) {
+    if (paddle.right && paddle.x < pong.canvas.width - pong.constants.paddleWidth - 15) {
         paddle.x += pong.constants.paddleSpeed;
-    } else if (paddle.left && paddle.x > 0) {
+    } else if (paddle.left && paddle.x > 15) {
         paddle.x -= pong.constants.paddleSpeed;
     }
 }
