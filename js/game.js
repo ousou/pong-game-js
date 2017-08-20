@@ -11,6 +11,12 @@ pong.constants.paddleHeight = 15;
 pong.constants.paddleWidth = 75;
 pong.constants.paddlePadding = 10;
 pong.constants.paddleSpeed = 4;
+pong.constants.paddle1 = {};
+pong.constants.paddle1.leftKey = 37;
+pong.constants.paddle1.rightKey = 39;
+pong.constants.paddle2 = {};
+pong.constants.paddle2.leftKey = 90;
+pong.constants.paddle2.rightKey = 88;
 
 pong.state = {};
 pong.state.x = pong.canvas.width / 2;
@@ -120,25 +126,25 @@ document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
 function keyDownHandler(e) {
-    if (e.keyCode == 39) {
+    if (e.keyCode == pong.constants.paddle1.rightKey) {
         pong.state.paddle1.right = true;
-    } else if (e.keyCode == 37) {
+    } else if (e.keyCode == pong.constants.paddle1.leftKey) {
         pong.state.paddle1.left = true;
-    } else if (e.keyCode == 90) {
+    } else if (e.keyCode == pong.constants.paddle2.leftKey) {
         pong.state.paddle2.left = true;
-    } else if (e.keyCode == 88) {
+    } else if (e.keyCode == pong.constants.paddle2.rightKey) {
         pong.state.paddle2.right = true;
     }
 }
 
 function keyUpHandler(e) {
-    if (e.keyCode == 39) {
+    if (e.keyCode == pong.constants.paddle1.rightKey) {
         pong.state.paddle1.right = false;
-    } else if (e.keyCode == 37) {
+    } else if (e.keyCode == pong.constants.paddle1.leftKey) {
         pong.state.paddle1.left = false;
-    } else if (e.keyCode == 90) {
+    } else if (e.keyCode == pong.constants.paddle2.leftKey) {
         pong.state.paddle2.left = false;
-    } else if (e.keyCode == 88) {
+    } else if (e.keyCode == pong.constants.paddle2.rightKey) {
         pong.state.paddle2.right = false;
     }
 }
