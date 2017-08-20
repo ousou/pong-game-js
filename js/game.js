@@ -49,9 +49,17 @@ function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function flipCoin() {
+    return (Math.floor(Math.random() * 2) == 0);
+}
+
 function getInitialSpeed() {
-    var initDx = getRandom(-pong.constants.initTotalSpeed + 1, pong.constants.initTotalSpeed - 1);
-    var initDy = Math.sqrt(pong.constants.initTotalSpeed * pong.constants.initTotalSpeed - initDx * initDx);
+    var initDx = getRandom(1.5, pong.constants.initTotalSpeed - 1);
+    if (flipCoin()) {
+        initDx = -initDx;
+    }
+    var initDy = getOtherSpeed(initDx, pong.constants.initTotalSpeed);
+    // var initDy = Math.sqrt(pong.constants.initTotalSpeed * pong.constants.initTotalSpeed - initDx * initDx);
     if (pong.state.lastWinner === "2") {
         initDy = -initDy;
     }
@@ -59,6 +67,10 @@ function getInitialSpeed() {
         dx: initDx,
         dy: initDy
     }
+}
+
+function getOtherSpeed(dx, totalSpeed) {
+    return Math.sqrt(totalSpeed * totalSpeed - dx * dx);
 }
 
 function resetState(coords, speed) {
@@ -124,7 +136,10 @@ function checkPaddleCollision(ball, paddle) {
             ball.x + ball.radius >= paddle.x &&
             ball.y + ball.radius >= paddle.y) {
                 ball.y = paddle.y - ball.radius;
+                // ball.dx = getNewDx(ball, paddle);
+                // ball.dy = getOtherSpeed(ball.dx, pong.constants.initTotalSpeed);
                 ball.dy = -ball.dy;
+                // alert('hit paddle 1. new dx: ' + ball.dx + ', new dy: ' + ball.dy);
         }
     } else if (paddle.number === 2) {
         if (ball.x <= paddle.x + paddle.width &&
@@ -132,12 +147,34 @@ function checkPaddleCollision(ball, paddle) {
             ball.y <= paddle.y + paddle.height) {
                 ball.y = paddle.y + paddle.height;
                 ball.dy = -ball.dy;
+                // ball.dx = getNewDx(ball, paddle);
+                // ball.dy = getOtherSpeed(ball.dx, pong.constants.initTotalSpeed);
+                // alert('hit paddle 2. new dx: ' + ball.dx + ', new dy: ' + ball.dy);
         }
     }
 }
 
 function getNewDx(ball, paddle) {
+    var ballMidPoint = ball.x + ball.radius / 2;
+    if (ballMidPoint < paddle.x + paddle.width / 2) {
+        var start = paddle.x;
+        var end = ballMidPoint;
+    } else {
+        var start = ballMidPoint;
+        var end = paddle.x + paddle.width;
+    }
 
+    var slope = getSlope(start, end);
+    var constant = getConstant(slope, end);
+    return slope * ball.x + constant;
+}
+
+function getSlope(start, end) {
+    return 1.5 / (end - start);
+}
+
+function getConstant(slope, end) {
+    return 2 - slope * end;
 }
 
 function distance(x1, y1, x2, y2) {
