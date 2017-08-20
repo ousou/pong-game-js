@@ -3,9 +3,13 @@ var pong = {};
 pong.canvas = document.getElementById("pongCanvas");
 pong.ctx = pong.canvas.getContext("2d");
 
+
+pong.state = {};
+pong.state.lastWinner = "1";
 pong.constants = {};
 pong.constants.drawInterval = 7;
 pong.constants.ballRadius = 14;
+pong.constants.initTotalSpeed = 3;
 pong.constants.initDx = 2;
 pong.constants.initDy = -2;
 pong.constants.color = "#FFFFFF";
@@ -26,17 +30,42 @@ pong.score = {
 }
 
 function startGame() {
-    resetState();
+    var coords = getInitialCoords();
+    var speed = getInitialSpeed();
+    resetState(coords, speed);
+    document.getElementById("start").disabled = true;
     pong.state.intervalId = setInterval(draw, pong.constants.drawInterval);
 }
 
-function resetState() {
-    pong.state = {};
+function getInitialCoords() {
+    return {
+        x: pong.canvas.width / 2,
+        y: pong.canvas.height / 2
+    }
+}
+
+function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function getInitialSpeed() {
+    var initDx = getRandom(-pong.constants.initTotalSpeed + 1, pong.constants.initTotalSpeed - 1);
+    var initDy = Math.sqrt(pong.constants.initTotalSpeed * pong.constants.initTotalSpeed - initDx * initDx);
+    if (pong.state.lastWinner === "2") {
+        initDy = -initDy;
+    }
+    return {
+        dx: initDx,
+        dy: initDy
+    }
+}
+
+function resetState(coords, speed) {
     pong.state.ball = {};
-    pong.state.ball.x = pong.canvas.width / 2;
-    pong.state.ball.y = pong.canvas.height - 70;
-    pong.state.ball.dx = pong.constants.initDx;
-    pong.state.ball.dy = pong.constants.initDy;
+    pong.state.ball.x = coords.x;
+    pong.state.ball.y = coords.y;
+    pong.state.ball.dx = speed.dx;
+    pong.state.ball.dy = speed.dy;
     pong.state.ball.radius = pong.constants.ballRadius;
 
     pong.state.paddle1 = {};
@@ -120,9 +149,11 @@ function checkCollisions() {
 
 function handleGameOver(winner) {
     pong['score'][winner] = pong['score'][winner] + 1;
+    pong.state.lastWinner = winner;
     updateScoreTable();
     alert("Player " + winner + " wins!");
     clearInterval(pong.state.intervalId);
+    document.getElementById("start").disabled = false;
 }
 
 function updateScoreTable() {
