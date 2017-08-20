@@ -19,12 +19,14 @@ pong.state.dx = 2;
 pong.state.dy = -2;
 
 pong.state.paddle1 = {};
-pong.state.paddle2 = {};
+pong.state.paddle1.right = false;
+pong.state.paddle1.left = false;
 pong.state.paddle1.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
-pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
 
-pong.state.rightPressed = false;
-pong.state.leftPressed = false;
+pong.state.paddle2 = {};
+pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
+pong.state.paddle2.right = false;
+pong.state.paddle2.left = false;
 
 pong.score = {
     1: 0,
@@ -38,12 +40,14 @@ function resetState() {
     pong.state.dy = -2;
 
     pong.state.paddle1 = {};
-    pong.state.paddle2 = {};
+    pong.state.paddle1.right = false;
+    pong.state.paddle1.left = false;
     pong.state.paddle1.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
-    pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
 
-    pong.state.rightPressed = false;
-    pong.state.leftPressed = false;
+    pong.state.paddle2 = {};
+    pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
+    pong.state.paddle2.right = false;
+    pong.state.paddle2.left = false;
 
 }
 
@@ -93,11 +97,11 @@ function updateBallLocation() {
     pong.state.y += pong.state.dy;
 }
 
-function updatePaddleLocation() {
-    if (pong.state.rightPressed && pong.state.paddle1.x < pong.canvas.width - pong.constants.paddleWidth) {
-        pong.state.paddle1.x += pong.constants.paddleSpeed;
-    } else if (pong.state.leftPressed && pong.state.paddle1.x > 0) {
-        pong.state.paddle1.x -= pong.constants.paddleSpeed;
+function updatePaddleLocation(paddle) {
+    if (paddle.right && paddle.x < pong.canvas.width - pong.constants.paddleWidth) {
+        paddle.x += pong.constants.paddleSpeed;
+    } else if (paddle.left && paddle.x > 0) {
+        paddle.x -= pong.constants.paddleSpeed;
     }
 }
 
@@ -108,7 +112,8 @@ function draw() {
     drawPaddle(pong.ctx, pong.state.paddle2.x, pong.constants.paddlePadding, pong.constants.paddleHeight, pong.constants.paddleWidth, pong.constants.color);
     checkCollisions();
     updateBallLocation();
-    updatePaddleLocation();
+    updatePaddleLocation(pong.state.paddle1);
+    updatePaddleLocation(pong.state.paddle2);
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
@@ -116,19 +121,25 @@ document.addEventListener("keyup", keyUpHandler, false);
 
 function keyDownHandler(e) {
     if (e.keyCode == 39) {
-        pong.state.rightPressed = true;
-    }
-    else if (e.keyCode == 37) {
-        pong.state.leftPressed = true;
+        pong.state.paddle1.right = true;
+    } else if (e.keyCode == 37) {
+        pong.state.paddle1.left = true;
+    } else if (e.keyCode == 90) {
+        pong.state.paddle2.left = true;
+    } else if (e.keyCode == 88) {
+        pong.state.paddle2.right = true;
     }
 }
 
 function keyUpHandler(e) {
     if (e.keyCode == 39) {
-        pong.state.rightPressed = false;
-    }
-    else if (e.keyCode == 37) {
-        pong.state.leftPressed = false;
+        pong.state.paddle1.right = false;
+    } else if (e.keyCode == 37) {
+        pong.state.paddle1.left = false;
+    } else if (e.keyCode == 90) {
+        pong.state.paddle2.left = false;
+    } else if (e.keyCode == 88) {
+        pong.state.paddle2.right = false;
     }
 }
 
