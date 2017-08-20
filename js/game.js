@@ -20,38 +20,18 @@ pong.constants.paddle2 = {};
 pong.constants.paddle2.leftKey = 90;
 pong.constants.paddle2.rightKey = 88;
 
-pong.state = {};
-pong.state.ball = {};
-pong.state.ball.x = pong.canvas.width / 2;
-pong.state.ball.y = pong.canvas.height - 70;
-pong.state.ball.dx = pong.constants.initDx;
-pong.state.ball.dy = pong.constants.initDy;
-pong.state.ball.radius = pong.constants.ballRadius;
-
-pong.state.paddle1 = {};
-pong.state.paddle1.number = 1;
-pong.state.paddle1.right = false;
-pong.state.paddle1.left = false;
-pong.state.paddle1.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
-pong.state.paddle1.y = pong.canvas.height - pong.constants.paddleHeight - pong.constants.paddlePadding;
-pong.state.paddle1.height = pong.constants.paddleHeight;
-pong.state.paddle1.width = pong.constants.paddleWidth;
-
-pong.state.paddle2 = {};
-pong.state.paddle2.number = 2;
-pong.state.paddle2.x = (pong.canvas.width - pong.constants.paddleWidth) / 2;
-pong.state.paddle2.y = pong.constants.paddlePadding;
-pong.state.paddle2.right = false;
-pong.state.paddle2.left = false;
-pong.state.paddle2.height = pong.constants.paddleHeight;
-pong.state.paddle2.width = pong.constants.paddleWidth;
-
 pong.score = {
     1: 0,
     2: 0
 }
 
+function startGame() {
+    resetState();
+    pong.state.intervalId = setInterval(draw, pong.constants.drawInterval);
+}
+
 function resetState() {
+    pong.state = {};
     pong.state.ball = {};
     pong.state.ball.x = pong.canvas.width / 2;
     pong.state.ball.y = pong.canvas.height - 70;
@@ -140,8 +120,14 @@ function checkCollisions() {
 
 function handleGameOver(winner) {
     pong['score'][winner] = pong['score'][winner] + 1;
-    alert("Player " + winner + " wins! \n\n" + "Score: \n" + "Player 1: " + pong['score']['1'] + "\n" + "Player 2: " + pong['score']['2']);
-    resetState();
+    updateScoreTable();
+    alert("Player " + winner + " wins!");
+    clearInterval(pong.state.intervalId);
+}
+
+function updateScoreTable() {
+    document.getElementById("player1Score").innerHTML = pong['score']['1'];
+    document.getElementById("player2Score").innerHTML = pong['score']['2'];
 }
 
 function updateBallLocation() {
@@ -150,9 +136,9 @@ function updateBallLocation() {
 }
 
 function updatePaddleLocation(paddle) {
-    if (paddle.right && paddle.x < pong.canvas.width - pong.constants.paddleWidth - 15) {
+    if (paddle.right && paddle.x < pong.canvas.width - pong.constants.paddleWidth - 5) {
         paddle.x += pong.constants.paddleSpeed;
-    } else if (paddle.left && paddle.x > 15) {
+    } else if (paddle.left && paddle.x > 5) {
         paddle.x -= pong.constants.paddleSpeed;
     }
 }
@@ -194,5 +180,3 @@ function keyUpHandler(e) {
         pong.state.paddle2.right = false;
     }
 }
-
-setInterval(draw, pong.constants.drawInterval);

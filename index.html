@@ -6,7 +6,17 @@
         <link rel="stylesheet" type="text/css" href="css/style.css" />
     </head>
     <body>
-        <canvas id="pongCanvas" width="480" height="320"></canvas>
+        <container class="gameScreen">
+            <canvas id="pongCanvas" width="480" height="320"></canvas>
+        </container>
+        <container class="settings">
+            <button type="button" id="start" onclick="startGame();">Start game!</button>
+        </container>
+        <container class="score">
+            <p>Player 1: </p><p id="player1Score">0</p>
+            <p>Player 2: </p><p id="player2Score">0</p>
+        </container>
     </body>
+
     <script src="js/game.js"></script>
 </html>
